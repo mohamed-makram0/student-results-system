@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>نظام إدارة وتحليل نتائج الطلاب</title>
+</head>
+<body>
+  <h1>نظام إدارة وتحليل نتائج الطلاب</h1>
+  <p>نتائج الطلاب</p>
+  <script>
+class Student {
+  constructor(id, name, grades, attendance) {
+    this.id = id;                 // رقم الجلوس
+    this.name = name;             // الاسم
+    this.grades = grades;         // مصفوفة درجات 3 مواد
+    this.attendance = attendance; // نسبة الحضور
+  }
+
+  
+
+  calculateAverage() {
+    const total = this.grades.reduce((sum, grade) => sum + grade, 0);
+    return total / this.grades.length;
+  }
+
+ 
+  getGrade(average) {
+    if (average >= 90) {
+      return "A";
+    } else if (average >= 80) {
+      return "B";
+    } else if (average >= 70) {
+      return "C";
+    } else if (average >= 60) {
+      return "D";
+    } else if (average >= 50) {
+      return "E";
+    } else {
+      return "F";
+    }
+  }
+
+  getFinalResult() {
+    const average = this.calculateAverage();
+    if (average >= 50 && this.attendance >= 75) {
+      return "ناجح";
+    } else {
+      return "يحتاج مراجعة";
+    }
+  }
+}
+
+
+const studentsList = [
+  new Student(1001, "أحمد علي", [90, 85, 95], 95),   
+  new Student(1002, "سارة محمود", [45, 42, 48], 80), 
+  new Student(1003, "عمر حسن", [60, 70, 65], 70),    
+  new Student(1004, "منى خالد", [48, 44, 49], 85),   
+];
+
+
+console.log("========== تقرير الطلاب ==========");
+studentsList.forEach((student) => {
+  const average = student.calculateAverage();
+  console.log(
+    `الاسم: ${student.name} | المتوسط: ${average.toFixed(2)} | ` +
+    `التقدير: ${student.getGrade(average)} | النتيجة: ${student.getFinalResult()}`
+  );
+});
+
+
+const strugglingStudents = studentsList.filter((student) => {
+  const average = student.calculateAverage();
+  return average >= 40 && average <= 49;
+});
+
+
+const LENIENCY_POINTS = 5;
+const leniencyList = strugglingStudents.map((student) => {
+  const originalAverage = student.calculateAverage();
+  return {
+    id: student.id,
+    name: student.name,
+    originalAverage: originalAverage,
+    newAverage: originalAverage + LENIENCY_POINTS,
+  };
+});
+
+
+const totalNewAverages = leniencyList.reduce(
+  (sum, student) => sum + student.newAverage,
+  0
+);
+
+
+const leniencyAverage =
+  leniencyList.length === 0 ? 0 : totalNewAverages / leniencyList.length;
+
+
+console.log("========== الطلاب المتعثرون بعد الرأفة ==========");
+console.log(leniencyList);
+
+console.log("========== متوسط درجات المتعثرين بعد التعديل ==========");
+console.log(`المتوسط: ${leniencyAverage.toFixed(2)}`);</script>
+</body>
+</html>
